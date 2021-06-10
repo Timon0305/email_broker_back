@@ -4,6 +4,7 @@ const cors = require('cors');
 
 const {
   createQuote,
+    addQuote,
   fileUpload
 } = require('../Controllers/customer');
 
@@ -11,7 +12,9 @@ const {
 router
   .route('/createQuote')
   .post(createQuote);
-
+router
+    .route('/addQuote')
+    .post(addQuote)
 router
     .route('/uploadFile')
     .post(fileUpload)

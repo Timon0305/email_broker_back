@@ -2,7 +2,7 @@
 node_modules
 .idea/
 .DS_Store
-
+public
 # env
 # config/config.env
 # templates/config.env

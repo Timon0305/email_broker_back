@@ -1,10 +1,9 @@
 const CustomerSchema = require('../Models/Customer');
-const multer = require('multer');
 
-exports.createQuote = (req, res, next) => {
+exports.createQuote = (req, res) => {
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     const lengthOfCode = 6;
-    let {userEmail, title, description, quantity, unit, attachment} = req.body
+    let {email, title, description, quantity, unit, attachment} = req.body
     let passcode = makeRandom(lengthOfCode, possible);
     CustomerSchema.findOne({passcode: passcode}).then(data => {
         if (data) {
@@ -13,7 +12,7 @@ exports.createQuote = (req, res, next) => {
                 msg: 'Password is already existed'
             })
         } else {
-            const customer = new CustomerSchema({userEmail, title, description, quantity, unit, passcode, attachment})
+            const customer = new CustomerSchema({email, title, description, quantity, unit, passcode, attachment})
             customer.save().then(data => {
                 res.send({
                     success: true,
@@ -24,6 +23,21 @@ exports.createQuote = (req, res, next) => {
         }
     })
 }
+
+exports.addQuote = (req, res) => {
+    console.log(req.body.quoteInfo)
+    let {email, title, description, quantity, unit, attachment} = req.body.quoteInfo
+    let passcode = req.body.passcode;
+    const customer = new CustomerSchema({email, title, description, quantity, unit, passcode, attachment})
+    customer.save().then(data => {
+        res.send({
+            success: true,
+            data: data,
+            msg: 'Successfully Created'
+        })
+    }).catch(err => console.log(err))
+}
+
 function makeRandom(lengthOfCode, possible) {
     let text = "";
     for (let i = 0; i < lengthOfCode; i++) {
@@ -32,7 +46,7 @@ function makeRandom(lengthOfCode, possible) {
     return text;
 }
 
-exports.fileUpload = (req, res, next) => {
+exports.fileUpload = (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
@@ -43,7 +57,6 @@ exports.fileUpload = (req, res, next) => {
     })
     if (req.files.file) {
         let path = __dirname + '\\..\\public\\' + req.files.file.name;
-        console.log('path', path);
         req.files.file.mv(path, (err) => {
             if (err) {
                 return res.status(500).send(err)

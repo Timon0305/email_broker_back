@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const normalize = require('normalize-mongoose');
 
 const CustomerSchema = new mongoose.Schema({
-  userEmail: {
+  email: {
     type: String,
   },
   title: {
