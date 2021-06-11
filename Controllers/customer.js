@@ -73,3 +73,19 @@ exports.fileUpload = (req, res) => {
         })
     }
 }
+
+exports.checkPasscode = (req, res) => {
+    const passcode = req.query.pass;
+    CustomerSchema.findOne({passcode: passcode}, (err, data) => {
+        if (data) {
+            res.send({
+                success: true,
+                passcode
+            })
+        } else {
+            res.send({
+                success: false,
+            })
+        }
+    })
+}

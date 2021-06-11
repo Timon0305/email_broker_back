@@ -6,7 +6,8 @@ const {
   getQuote,
   createQuote,
     addQuote,
-  fileUpload
+  fileUpload,
+    checkPasscode
 } = require('../Controllers/customer');
 
 router
@@ -21,7 +22,9 @@ router
 router
     .route('/uploadFile')
     .post(fileUpload)
-
+router
+    .route('/checkPasscode')
+    .get(checkPasscode)
 
 module.exports = router;
 
