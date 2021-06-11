@@ -1,5 +1,14 @@
 const CustomerSchema = require('../Models/Customer');
 
+exports.getQuote = (req, res) => {
+    const passcode = req.query.passcode;
+    CustomerSchema.find({passcode: passcode}).then(data => {
+        res.send({
+            data
+        })
+    })
+};
+
 exports.createQuote = (req, res) => {
     let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
     const lengthOfCode = 6;
@@ -25,7 +34,6 @@ exports.createQuote = (req, res) => {
 }
 
 exports.addQuote = (req, res) => {
-    console.log(req.body.quoteInfo)
     let {email, title, description, quantity, unit, attachment} = req.body.quoteInfo
     let passcode = req.body.passcode;
     const customer = new CustomerSchema({email, title, description, quantity, unit, passcode, attachment})
