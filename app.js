@@ -1,68 +1,21 @@
-/*---------------------------------------
-| This is the backend framework for Docitoo ,
-| built by Ricky Keele. Unauthorized use is strictly
-| prohibited and Docitoo reserves the right to take legal action
-| at their own discretion
-|
-|----------------------------------------
-|   Load Dependencies
-|----------------------------------------*/
-
-/*------------
-|   Express Framework
-|-------------*/
 const express = require('express');
-/*------------
-|   dotEnv - allows the use of global environment variables with process.env
-|-------------*/
 const dotenv = require('dotenv');
 const config = dotenv.config({
   path: './config/config.env'
 });
-/*------------
-|   Morgan - dev package
-|-------------*/
+
 const morgan = require('morgan');
-/*------------
-|   Console Colors
-|-------------*/
 const colors = require('colors');
-/*------------
-|   ErrorHandler Middleware
-|-------------*/
 const errorHandler = require('./middleware/error');
-/*------------
-|   Cookie Parser - allows cookies to be sent
-|-------------*/
 const cookieParser = require('cookie-parser');
-/*------------
-|   AMAZON WEB SERVICES
-|-------------*/
 const AWS = require('aws-sdk');
-/*------------
-|   Cross-Origin Resource Sharing
-|-------------*/
 const cors = require('cors');
 const bodyParser = require('body-parser');
-/*------------
-|   Request IP
-|-------------*/
 const requestIp = require('request-ip');
 const expressip = require('express-ip');
 const fileUpload = require('express-fileupload');
 const connectDB = require('./config/dbConnect');
 const http = require('http');
-const https = require('https');
-
-/*--------------------------------
-| >>**Security**<<
-| The following dependencies are required in order to
-| ensure the security of the Docitoo Framework. MongoSanitizer
-| sanitizes queries, POST and GET, in order to prevent Mongo
-| functions from being sent in the query, which can cause
-| potential misuse and lead to harm. The helmet package prevents
-| harmful HTTP headers, and the XSS package prevents harmful html
-| from being sent in the query.*/
 
 const mongoSanitizer = require('express-mongo-sanitize');
 const helmet = require('helmet');
@@ -74,13 +27,10 @@ const xss = require('xss-clean');
 
 connectDB();
 
-// Route files
-
 const customer = require('./routes/customer');
-
+const vendor = require('./routes/vendor');
 
 const app = express();
-// JSON interpreter
 
 app.use(express.json({'limit': '50mb'}));
 app.use(bodyParser.urlencoded({extended: true}));
@@ -104,9 +54,8 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(morgan('combined'));
 }
 
-// Mount
-
 app.use('/api/customer', customer);
+app.use('/api/vendor', vendor);
 
 app.use(errorHandler);
 
@@ -119,11 +68,11 @@ const expressSwagger = require('express-swagger-generator')(app);
 let options = {
   swaggerDefinition: {
     info: {
-      description: 'BADEN API server',
+      description: 'Email Broker API server',
       title: 'BADEN',
       version: '1.0.0',
     },
-    host: 'localhost:3000',
+    host: 'localhost:4200',
     basePath: '/api',
     produces: [
       "application/json",

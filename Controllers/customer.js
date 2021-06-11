@@ -75,16 +75,19 @@ exports.fileUpload = (req, res) => {
 }
 
 exports.checkPasscode = (req, res) => {
+    console.log('sdf')
     const passcode = req.query.pass;
     CustomerSchema.findOne({passcode: passcode}, (err, data) => {
         if (data) {
             res.send({
                 success: true,
+                msg: 'Successfully Redirected',
                 passcode
             })
         } else {
             res.send({
                 success: false,
+                msg: 'Invalid Passcode'
             })
         }
     })

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const cors = require('cors');
 
 const {
   getQuote,
@@ -23,7 +22,7 @@ router
     .route('/uploadFile')
     .post(fileUpload)
 router
-    .route('/checkPasscode')
+    .route('/checkQuote')
     .get(checkPasscode)
 
 module.exports = router;
