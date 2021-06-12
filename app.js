@@ -69,7 +69,7 @@ let options = {
   swaggerDefinition: {
     info: {
       description: 'Email Broker API server',
-      title: 'BADEN',
+      title: 'Email Broker',
       version: '1.0.0',
     },
     host: 'localhost:4200',
