@@ -75,7 +75,6 @@ exports.fileUpload = (req, res) => {
 }
 
 exports.checkPasscode = (req, res) => {
-    console.log('sdf')
     const passcode = req.query.pass;
     CustomerSchema.findOne({passcode: passcode}, (err, data) => {
         if (data) {
