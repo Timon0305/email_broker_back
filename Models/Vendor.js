@@ -1,10 +1,13 @@
 const mongoose = require('mongoose');
 
-const QuoteSchema = new mongoose.Schema({
-    customerId: {
+const VendorSchema = new mongoose.Schema({
+    creatorId: {
         type: String,
     },
-    vendorId: {
+    creatorPasscode: {
+        type: String,
+    },
+    vendorPasscode: {
         type: String,
     },
     price: {
@@ -17,8 +20,8 @@ const QuoteSchema = new mongoose.Schema({
     updatedAt: Date,
 });
 
-QuoteSchema.pre('save', async function(next) {
+VendorSchema.pre('save', async function(next) {
     this.updatedAt = new Date(Date.now());
 });
 
-module.exports = mongoose.model('Quote', QuoteSchema);
+module.exports = mongoose.model('Vendor', VendorSchema);

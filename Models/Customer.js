@@ -23,6 +23,9 @@ const CustomerSchema = new mongoose.Schema({
   attachment: {
     type: String
   },
+  price: {
+    type: Number
+  },
   createdAt: {
     type: Date,
     default: Date.now
