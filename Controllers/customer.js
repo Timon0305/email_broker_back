@@ -64,7 +64,7 @@ exports.fileUpload = (req, res) => {
         user.save();
     })
     if (req.files.file) {
-        let path = __dirname + '\\..\\public\\' + req.files.file.name;
+        let path = __dirname + '/../public/' + req.files.file.name;
         console.log('=>>>>>>>>>>>', path)
         req.files.file.mv(path, (err) => {
             if (err) {
