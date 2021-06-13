@@ -7,7 +7,7 @@ exports.getBid = async (req, res) => {
     try {
         let data = await CustomerSchema.find({passcode: {$ne: passcode}});
         for (let item of data) {
-            const vendor = await VendorSchema.findOne({creatorId: item._id});
+            const vendor = await VendorSchema.findOne({creatorId: item._id, vendorPasscode: passcode});
             if (vendor) {
                 item.price = vendor.price
             }
