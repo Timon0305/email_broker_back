@@ -1,5 +1,6 @@
 const CustomerSchema = require('../Models/Customer');
 const VendorSchema = require('../Models/Vendor');
+const InviteSchema = require('../Models/Invite');
 
 exports.getBid = async (req, res) => {
     const passcode = req.query.pass;
@@ -57,4 +58,87 @@ exports.submitQuote = (req, res) => {
             console.log(e)
         }
     })
+}
+
+exports.getAllVendors = async (req, res) => {
+    const passcode = req.query.pass;
+    let key = req.query.key;
+    let data;
+    try {
+        if (key === '') {
+            data = await CustomerSchema.find({passcode: {$ne: passcode}});
+        } else {
+            data = await CustomerSchema.find({passcode: {$ne: passcode}}).find({email: {"$regex": key, "$options": "i"}});
+        }
+        res.send({
+            data
+        })
+    } catch (e) {
+        res.status(500).send();
+    }
+};
+
+exports.getInvitedVendor = async (req, res) => {
+    const passcode = req.query.pass;
+    let invitedData = [];
+    try {
+        let data = await InviteSchema.find({creator: passcode});
+        for (let item of data) {
+            const vendor = await CustomerSchema.findOne({passcode: item.vendor});
+            invitedData.push(vendor)
+        }
+        res.status(200).send({
+            invitedData
+        })
+    } catch (e) {
+        res.status(500).send()
+    }
+}
+
+exports.inviteVendor = async (req, res) => {
+    let {creator, vendor} = req.body;
+    try {
+        let searchInvite = await InviteSchema.find({creator: creator, vendor: vendor});
+        if (searchInvite && searchInvite.length > 0) {
+            res.status(200).send({
+                success: false,
+                msg: 'This vendor was already invited'
+            })
+        } else {
+            const invite = new InviteSchema({creator, vendor})
+            invite.save().then(data => {
+                res.status(200).send({
+                    success: true,
+                    data: data,
+                    msg: 'Successfully Invited'
+                })
+            })
+        }
+    } catch (e) {
+        res.status(500).send();
+    }
+};
+
+exports.deleteVendor = async (req, res) => {
+    const {creator, vendor} = req.query;
+    try {
+        InviteSchema.remove({creator: creator, vendor: vendor}, (err, data) => {
+            if (err) {
+                res.status(500).send({
+                    success: false
+                })
+            } else {
+                res.status(200).send({
+                    success: true,
+                    data: data,
+                    msg: 'Successfully Removed'
+                })
+            }
+        });
+
+    } catch (e) {
+        res.status(500).send();
+    }
+
+
 }
