@@ -1,28 +1,33 @@
 const CustomerSchema = require('../Models/Customer');
 const VendorSchema = require('../Models/Vendor');
 
-exports.getBid = (req, res) => {
+exports.getBid = async (req, res) => {
     const passcode = req.query.pass;
-    CustomerSchema.find({passcode: {$ne: passcode}}).then(async data => {
-        data.map(item => {
-             VendorSchema.findOne({creatorId: item._id}, (err, vendor) => {
-                if (vendor) {
-                    item.price = vendor.price
-                }
-            })
+    try {
+        let data = await CustomerSchema.find({passcode: {$ne: passcode}});
+        for (let item of data) {
+            const vendor = await VendorSchema.findOne({creatorId: item._id});
+            if (vendor) {
+                item.price = vendor.price
+            }
+        }
+        res.send({
+            data
         })
-        setTimeout(() => {
-            res.send({
-                data
-            })
-        }, 4000)
-    })
+
+    } catch (e) {
+        res.status(500).send();
+    }
 };
 
 exports.submitQuote = (req, res) => {
     let {creatorId, creatorPasscode, vendorPasscode, price} = req.body.formData;
     console.log(creatorId, creatorPasscode, vendorPasscode)
-    VendorSchema.findOne({creatorId: creatorId, creatorPasscode: creatorPasscode, vendorPasscode: vendorPasscode}, (err, data) => {
+    VendorSchema.findOne({
+        creatorId: creatorId,
+        creatorPasscode: creatorPasscode,
+        vendorPasscode: vendorPasscode
+    }, (err, data) => {
         try {
             if (data) {
                 data.price = price;
