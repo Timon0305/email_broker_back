@@ -6,7 +6,8 @@ const {
   createQuote,
     addQuote,
   fileUpload,
-    checkPasscode
+    checkPasscode,
+  getMyQuote,
 } = require('../Controllers/customer');
 
 router
@@ -24,7 +25,9 @@ router
 router
     .route('/checkQuote')
     .get(checkPasscode)
-
+router
+    .route('/getMyQuote')
+    .get(getMyQuote)
 module.exports = router;
 
 

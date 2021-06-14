@@ -1,4 +1,6 @@
 const CustomerSchema = require('../Models/Customer');
+const VendorSchema = require('../Models/Vendor');
+
 
 exports.getQuote = (req, res) => {
     const passcode = req.query.passcode;
@@ -91,4 +93,44 @@ exports.checkPasscode = (req, res) => {
             })
         }
     })
+};
+
+exports.getMyQuote = async (req, res) => {
+    let passcode = req.query.pass;
+    let data = [];
+    try {
+        let myQuote = await CustomerSchema.find({passcode: passcode});
+        for (let item of myQuote) {
+            let _subItem = {};
+            _subItem.title = item.title;
+            _subItem.quantity = item.quantity;
+            let others = await CustomerSchema.find({passcode: {$ne: passcode}}).sort('passcode');
+            let subData = [];
+            for (let _idOther = 0; _idOther < others.length; _idOther++) {
+
+                let vendor = await VendorSchema.findOne({
+                    creatorId: item._id,
+                    vendorPasscode: others[_idOther].passcode
+                })
+                let _subVendor = {
+                    name: 'vendor' + (_idOther + 1)
+                };
+                if (vendor) {
+                    _subVendor.price = vendor.price;
+                    _subVendor.vendor = vendor.vendorPasscode;
+                }
+                subData.push(_subVendor)
+            }
+            _subItem.vendor = subData
+
+            data.push(_subItem)
+        }
+        res.status(200).send({
+            data,
+        })
+    } catch (e) {
+        console.log('Exception ', e.message);
+        res.status(500).send()
+    }
+
 }
