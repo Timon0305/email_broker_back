@@ -118,6 +118,9 @@ exports.getMyQuote = async (req, res) => {
                 if (vendor) {
                     _subVendor.price = vendor.price;
                     _subVendor.vendor = vendor.vendorPasscode;
+                    _subVendor.calPrice = vendor.price * parseInt(item.quantity)
+                } else {
+                    _subVendor.calPrice = 'NaN'
                 }
                 subData.push(_subVendor)
             }
