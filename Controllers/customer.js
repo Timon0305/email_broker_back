@@ -143,8 +143,33 @@ exports.getMyQuote = async (req, res) => {
 
             data.push(_subItem)
         }
+        let lowPrice = [];
+        let minCountData = {};
+        for (let vendor of data[0].vendor) {
+            minCountData[vendor.name] = 0;
+        }
+        for (let product of data) {
+            let min = 99999999999999999999999;
+            for (let vendor of product.vendor) {
+                if (vendor.price < min) {
+                    min = vendor.price;
+                }
+            }
+
+            let minVendor = product.vendor.find(e => e.price === min);
+            if (minVendor) {
+                minCountData[minVendor.name]++;
+            }
+        }
+        for (let key in minCountData) {
+            lowPrice.push({
+                name: key,
+                count: minCountData[key]
+            })
+        }
         res.status(200).send({
             data,
+            lowPrice
         })
     } catch (e) {
         console.log('Exception ', e.message);
