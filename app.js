@@ -113,3 +113,9 @@ process.on('unhandledRejection', (err, promise) => {
     //server.close(() => process.exit(1));
   }
 });
+
+app.use('/public/:attachment', (req, res) => {
+ console.log(res.query)
+  const attachment = req.param('attachment');
+  res.sendFile(__dirname + '/public' + attachment)
+})
