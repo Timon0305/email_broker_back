@@ -114,10 +114,10 @@ exports.getMyQuote = async (req, res) => {
     let passcode = req.query.pass;
     let data = [];
     try {
-        let myQuote = await CustomerSchema.find({passcode: passcode});
+        let myQuote = await ItemSchema.find({passcode: passcode});
         for (let item of myQuote) {
             let _subItem = {};
-            _subItem.title = item.title;
+            _subItem.title = item.name;
             _subItem.quantity = item.quantity;
             let others = await CustomerSchema.find({passcode: {$ne: passcode}}).sort('passcode');
             let subData = [];
