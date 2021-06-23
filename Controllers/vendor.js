@@ -1,20 +1,24 @@
 const CustomerSchema = require('../Models/Customer');
 const VendorSchema = require('../Models/Vendor');
 const InviteSchema = require('../Models/Invite');
+const ItemSchema = require('../Models/Item');
 
 exports.getBid = async (req, res) => {
     const passcode = req.query.pass;
     try {
-        let data = await CustomerSchema.find({passcode: {$ne: passcode}});
-        for (let item of data) {
-            const vendor = await VendorSchema.findOne({creatorId: item._id, vendorPasscode: passcode});
-            if (vendor) {
-                item.price = vendor.price
-            }
-        }
-        res.send({
-            data
-        })
+        // let data = await CustomerSchema.find({passcode: {$ne: passcode}});
+        // for (let item of data) {
+        //     const vendor = await VendorSchema.findOne({creatorId: item._id, vendorPasscode: passcode});
+        //     if (vendor) {
+        //         item.price = vendor.price
+        //     }
+        // }
+        // res.send({
+        //     data
+        // })
+        let myData = await CustomerSchema.find({passcode: passcode})
+        let data = await ItemSchema.find({passcode: {$ne: passcode}});
+        res.send({data, myData})
 
     } catch (e) {
         res.status(500).send();

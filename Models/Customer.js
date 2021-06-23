@@ -11,20 +11,11 @@ const CustomerSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-  quantity: {
-    type: String
-  },
-  unit: {
-    type: String
-  },
   passcode: {
     type: String
   },
   attachment: {
     type: String
-  },
-  price: {
-    type: Number
   },
   createdAt: {
     type: Date,

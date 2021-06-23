@@ -1,5 +1,6 @@
 const CustomerSchema = require('../Models/Customer');
 const VendorSchema = require('../Models/Vendor');
+const ItemSchema = require('../Models/Item');
 
 
 exports.getQuote = (req, res) => {
@@ -11,28 +12,42 @@ exports.getQuote = (req, res) => {
     })
 };
 
-exports.createQuote = (req, res) => {
-    let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-    const lengthOfCode = 6;
-    let {email, title, description, quantity, unit, attachment} = req.body
-    let passcode = makeRandom(lengthOfCode, possible);
-    CustomerSchema.findOne({passcode: passcode}).then(data => {
-        if (data) {
+exports.createQuote = async (req, res) => {
+    try {
+        let possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        const lengthOfCode = 6;
+        let {email, title, description, attachment, items} = req.body
+        let passcode = makeRandom(lengthOfCode, possible);
+        let customer = await CustomerSchema.findOne({passcode: passcode});
+        if (customer) {
             res.send({
                 success: false,
-                msg: 'Password is already existed'
+                msg: 'Passcode is already existed'
             })
         } else {
-            const customer = new CustomerSchema({email, title, description, quantity, unit, passcode, attachment})
-            customer.save().then(data => {
-                res.send({
-                    success: true,
-                    data: data,
-                    msg: 'Successfully Created'
-                })
-            }).catch(err => console.log(err))
+            customer = new CustomerSchema({email, title, description, passcode, attachment});
+            await customer.save();
+
+            for (let it of items) {
+                let _item = new ItemSchema({
+                    name: it.itemName,
+                    description: it.itemDescription,
+                    passcode: passcode,
+                    quantity: it.itemQuantity,
+                    unit: it.itemUnit
+                });
+                await _item.save();
+            }
+            res.send({
+                success: true,
+                msg: 'Successfully created',
+                data: customer,
+            });
         }
-    })
+    } catch (e) {
+        console.log('ex:', e.message);
+
+    }
 }
 
 exports.addQuote = (req, res) => {
