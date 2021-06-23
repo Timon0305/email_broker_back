@@ -6,62 +6,49 @@ const ItemSchema = require('../Models/Item');
 exports.getBid = async (req, res) => {
     const passcode = req.query.pass;
     try {
-        // let data = await CustomerSchema.find({passcode: {$ne: passcode}});
-        // for (let item of data) {
-        //     const vendor = await VendorSchema.findOne({creatorId: item._id, vendorPasscode: passcode});
-        //     if (vendor) {
-        //         item.price = vendor.price
-        //     }
-        // }
-        // res.send({
-        //     data
-        // })
         let myData = await CustomerSchema.find({passcode: passcode})
         let data = await ItemSchema.find({passcode: {$ne: passcode}});
-        res.send({data, myData})
-
+        for (let item of data) {
+            const vendor = await VendorSchema.findOne({creatorId: item._id, vendorPasscode: passcode});
+            if (vendor) {
+                item.price = vendor.price
+            }
+        }
+        res.send({
+            data,
+            myData
+        })
     } catch (e) {
         res.status(500).send();
     }
 };
 
-exports.submitQuote = (req, res) => {
-    let {creatorId, creatorPasscode, vendorPasscode, price} = req.body.formData;
-    console.log(creatorId, creatorPasscode, vendorPasscode)
-    VendorSchema.findOne({
-        creatorId: creatorId,
-        creatorPasscode: creatorPasscode,
-        vendorPasscode: vendorPasscode
-    }, (err, data) => {
-        try {
-            if (data) {
-                data.price = price;
-                data.save();
-                CustomerSchema.find({_id: creatorId, passcode: creatorPasscode}, (err, customer) => {
-                    customer[0].price = price;
-                    res.send({
-                        success: true,
-                        data: data,
-                        msg: 'Successfully Edited'
-                    })
-                })
+exports.submitQuote = async (req, res) => {
+    let {formData, passcode} = req.body;
+    try {
+        for (let item of formData) {
+            let vendorItem = await VendorSchema.findOne({vendorPasscode: passcode, creatorId: item._id});
+            if (vendorItem) {
+                vendorItem.price = Number(item.price);
+               await vendorItem.save();
             } else {
-                const vendor = new VendorSchema({creatorId, creatorPasscode, vendorPasscode, price});
-                vendor.save();
-                CustomerSchema.find({_id: creatorId, passcode: creatorPasscode}, (err, customer) => {
-                    customer[0].price = price;
-                    res.send({
-                        success: true,
-                        data: data,
-                        msg: 'Successfully Submitted'
-                    })
-                })
+                let newItem = new VendorSchema({
+                    creatorId: item._id,
+                    vendorPasscode: passcode,
+                    price: Number(item.price)
+                });
+               await  newItem.save();
             }
-
-        } catch (e) {
-            console.log(e)
         }
-    })
+        res.status(200).send({
+            success: true,
+            msg: 'Successfully Submitted'
+        })
+    } catch (e) {
+        console.log(e.message);
+        res.status(500).send();
+    }
+
 }
 
 exports.getAllVendors = async (req, res) => {

@@ -4,9 +4,6 @@ const VendorSchema = new mongoose.Schema({
     creatorId: {
         type: String,
     },
-    creatorPasscode: {
-        type: String,
-    },
     vendorPasscode: {
         type: String,
     },
